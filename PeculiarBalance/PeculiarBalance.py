@@ -1,33 +1,27 @@
 import math
 import itertools
-#import unittest
+import timeit
 
-# class TestFindPowerOf3(unittest.TestCase):
-    # def test_findingNext(self):
-    #     self.assertEqual(findClosestPowerOf3(1), 1)
-    #     self.assertEqual(findClosestPowerOf3(2), 3)
-    #     self.assertEqual(findClosestPowerOf3(3), 3)
-    #     self.assertEqual(findClosestPowerOf3(4), 3)
-    #     self.assertEqual(findClosestPowerOf3(9), 9)
-    #     self.assertEqual(findClosestPowerOf3(10), 9)
-    #     self.assertEqual(findClosestPowerOf3(24), 27)
+class RunningAverageTimer():
+    def __init__(self):
+        self.times = []
+        self.t0 = 0
+        self.t1 = 0
 
+    def start(self):
+        self.t0 = timeit.default_timer
 
-def findClosestPowerOf3(x):
-    power = 0
-    while math.pow(3, power) < x:
-        power += 1
+    def stop(self):
+        self.t1 = timeit.default_timer
+        self.times.append(t1 - t0)
 
-    print "Nearest power of 3 to " + str(x) + " is " + str(power)
-    nextGreatestPower = math.pow(3, power)
-    nextLowerPower    = math.pow(3, power - 1)
-    return nextGreatestPower, nextLowerPower
+    def getAverage(self):
+        return sum(self.times) / len(self.times)
 
 def IsPowerOf3(x):
     return math.log(x, 3).is_integer()
 
 def findLeftAndRightHandWeights(x):
-    powersOf3 = [1]
     total = x
 
     while True:
@@ -39,7 +33,7 @@ def findLeftAndRightHandWeights(x):
                 for secondIter in range(0, len(leftoverEntries)):
                     secondCombinations = [list(n) for n in itertools.combinations(leftoverEntries, secondIter)]
                     for secondEntry in secondCombinations:
-#                        print "Checking " + str(entry) + ", " + str(secondEntry)
+                        #print "Checking " + str(entry) + ", " + str(secondEntry)
                         if sum(entry) + x == sum(secondEntry):
                             return entry, secondEntry
                         elif sum(secondEntry) + x == sum(entry):
@@ -59,10 +53,15 @@ def answer(x):
             answerList.append("-")
     return answerList
 
+powersOf3 = [1, 3, 9, 27]
+firstComboTimer = 0.0
+secondComboTimer = 0.0
+powerAppenderTimer = 0.0
 
 # print answer(2)
-print answer(8)
-# for x in range(1, 1000000001):
-print answer(7)
-for x in range(1, 10):
+#print answer(7)
+#print answer(8)
+
+#for x in range(1, 10):
+for x in xrange(1, 1000000001):
      print str(x) + ": " + str(answer(x))
