@@ -57,3 +57,15 @@ Output:
 
 Use verify [file] to test your solution and see how it does. When you are finished editing your code, use submit [file] to submit your
 answer. If your solution passes the test cases, it will be removed from your home folder.
+
+
+X...
+X...
+XX..
+XX.X
+XXXX
+5312
+
+2 + 4 + 3 = 9
+9 - 8
+    8 = (
