@@ -26,10 +26,9 @@ def calculateWaterInStack(stacklist):
 
 def calculateWaterInPair(stacklist, pair):
     water = 0
-    highestTowerIndex = max(pair)
-    highestTowerHeight = stacklist[highestTowerIndex]
-    for x in xrange(pair[0], pair[1]):
-        water += highestTowerHeight - stacklist[x]
+    lowestTowerHeight = min(stacklist[pair[0]], stacklist[pair[1]])
+    for x in xrange(pair[0] + 1, pair[1]):
+        water += lowestTowerHeight - stacklist[x]
     return water
 
 def findAllPairs(stackList):
@@ -37,52 +36,50 @@ def findAllPairs(stackList):
     finished = False
     index = 0
     while len(stackList) > 1 and not finished:
-        first, second, finished = findTowerPair(stackList)
+        first, second, stackList, removedFromLeft = findAndRemoveTowerPair(stackList)
+        if first is None:
+            return pairs
+
         first += index
         second += index
-        index = second
+        if removedFromLeft:
+            index = second
         pairs.append((first, second))
-        stackList = stackList[second:]
     return pairs
 
 
-def findTowerPair(stackList):
-    lookedBackwards = False
-    leftIndex  = findFirstNonIncreasingIndex(stackList)
-    if leftIndex is not None:
-        rightIndex = findNextHighestIndex(stackList[leftIndex + 1:], stackList[leftIndex], leftIndex + 1)
-        if rightIndex is None:
-            rightIndex = findPreviousHighestIndex(stackList, stackList[len(stackList) -1], stackList[leftIndex])
-            lookedBackwards = True
-    else:
-        rightIndex = len(stackList) - 1
-        leftIndex  = findPreviousHighestIndex(stackList, stackList[len(stackList) - 1], stackList[len(stackList) - 1])
-        lookedBackwards = True
-    return leftIndex, rightIndex, lookedBackwards
+def findAndRemoveTowerPair(stackList):
+    removedFromLeft = True
+    left, right = findTowerFromLeft(stackList)
 
-def findFirstNonIncreasingIndex(stackList):
-    for x in xrange(0, len(stackList)):
-        if x + 1 < len(stackList) and stackList[x] > stackList[x + 1]:
-            return x
-    return None
-
-def findNextHighestIndex(stackList, highestPoint, addToIndex=0):
-    for x in xrange(len(stackList)):
-        if stackList[x] >= highestPoint:
-            if x < len(stackList) - 1 and stackList[x] <= stackList[x+1]:
-                continue
-            return x + addToIndex
-    return None
-
-def findPreviousHighestIndex(stackList, highestPoint, pairedTowerHeight=-1):
-    for x in xrange(len(stackList) - 1, -1, -1):
-        if pairedTowerHeight > 0:
-            if stackList[x] > highestPoint or stackList[x] >= pairedTowerHeight:
-                return x
+    if left is None or right is None:
+        left, right = findTowerFromRight(stackList)
+        if left is None or right is None:
+            left, right = None, None
         else:
-            if stackList[x] > highestPoint:
-                return x
-    return None
+            stackList = stackList[:left + 1]
+            removedFromLeft = False
+    else:
+        stackList = stackList[right:]
+
+    return left, right, stackList, removedFromLeft
+
+
+def findTowerFromLeft(stackList):
+    leftTowerIndex = findLeftStartIndex(stackList)
+    if leftTowerIndex is not -1:
+        rightTowerIndex = findMatchingTowerToRight(stackList, leftTowerIndex)
+    else:
+        rightTowerIndex = -1
+    return leftTowerIndex, rightTowerIndex
+
+def findTowerFromRight(stackList):
+    rightTowerIndex = findRightStartIndex(stackList)
+    if rightTowerIndex is not -1:
+        leftTowerIndex = findMatchingTowerToLeft(stackList, rightTowerIndex)
+    else:
+        leftTowerIndex = -1
+    return leftTowerIndex, rightTowerIndex
 
 def findLeftStartIndex(stackList):
     # Find the first index of the list where the next element is decreasing
@@ -97,3 +94,22 @@ def findRightStartIndex(stackList):
         if stackList[x-1] < stackList[x]:
             return x
     return 0
+
+def stripHutches(stackList):
+    startIndex = findLeftStartIndex(stackList)
+    endIndex   = findRightStartIndex(stackList)
+    return stackList[startIndex:endIndex + 1]
+
+def findMatchingTowerToRight(stackList, leftTowerIndex):
+    towerHeight = stackList[leftTowerIndex]
+    for x in xrange(leftTowerIndex + 1, len(stackList)):
+        if stackList[x] >= towerHeight:
+            return x
+    return None
+
+def findMatchingTowerToLeft(stackList, rightTowerIndex):
+    towerHeight = stackList[rightTowerIndex]
+    for x in xrange(rightTowerIndex - 1, -1, -1):
+        if stackList[x] >= towerHeight:
+            return x
+    return None

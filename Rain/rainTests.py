@@ -2,7 +2,11 @@ import unittest
 import rain
 
 
-class SetupTests(unittest.TestCase):
+class FindStartPointTests(unittest.TestCase):
+    def test_findLeftDegenerate(self):
+        start = rain.findLeftStartIndex([])
+        self.assertEqual(start, -1)
+
     def test_findLeftStart(self):
         start = rain.findLeftStartIndex([1,4,2,5])
         self.assertEqual(start, 1)
@@ -43,7 +47,108 @@ class SetupTests(unittest.TestCase):
         end = rain.findRightStartIndex([1,1,1,1,1])
         self.assertEqual(end, 0)
 
-@unittest.skip("skip general tests")
+class StripHutchEdgesTests(unittest.TestCase):
+    def test_stripLeft(self):
+        stripped = rain.stripHutches([1,2,3,2,3])
+        self.assertEqual(stripped, [3,2,3])
+
+    def test_stripRight(self):
+        stripped = rain.stripHutches([3,2,3,2,1])
+        self.assertEqual(stripped, [3,2,3])
+
+    def test_stripBoth(self):
+        stripped = rain.stripHutches([1,4,3,4,3,3,2])
+        self.assertEqual(stripped, [4,3,4])
+
+    def test_stripNone(self):
+        stripped = rain.stripHutches([5,3,1,2])
+        self.assertEqual(stripped, [5,3,1,2])
+
+    def test_stripDegenerate(self):
+        stripped = rain.stripHutches([1,2,3,2,1])
+        self.assertEqual(stripped, [3])
+
+class TowerTests(unittest.TestCase):
+    def test_findTowerToRight(self):
+        rightIndex = rain.findMatchingTowerToRight([4,2,5], 0)
+        self.assertEqual(rightIndex, 2)
+
+    def test_findEqualTowerRight(self):
+        rightIndex = rain.findMatchingTowerToRight([3,1,2,3], 0)
+        self.assertEqual(rightIndex, 3)
+
+    def test_findNoTowerToRight(self):
+        rightIndex = rain.findMatchingTowerToRight([4,3,1,2], 0)
+        self.assertIsNone(rightIndex)
+
+    def test_findNoTowerRightDegenerate(self):
+        rightIndex = rain.findMatchingTowerToRight([3], 0)
+        self.assertIsNone(rightIndex)
+
+    def test_findTowerToLeft(self):
+        leftIndex = rain.findMatchingTowerToLeft([5,2,4], 2)
+        self.assertEqual(leftIndex, 0)
+
+    def test_findEqualTowerToLeft(self):
+        leftIndex = rain.findMatchingTowerToLeft([4,3,2,3,1,4], 5)
+        self.assertEqual(leftIndex, 0)
+
+    def test_findNoTowerToLeft(self):
+        leftIndex = rain.findMatchingTowerToLeft([1,2,3,5], 3)
+        self.assertIsNone(leftIndex)
+
+    def test_findNoTowerLeftDegenerate(self):
+        leftIndex = rain.findMatchingTowerToLeft([3], 0)
+        self.assertIsNone(leftIndex)
+
+class PairTests(unittest.TestCase):
+    def test_findNoPairs(self):
+        first, second, stacklist, removedFromLeft = rain.findAndRemoveTowerPair([])
+        self.assertEqual(first, -1)
+        self.assertEqual(second, -1)
+
+    def test_findTowerPair_fromLeft(self):
+        first, second, stackList, removedFromLeft = rain.findAndRemoveTowerPair([1, 4, 2, 5])
+        self.assertEqual(first, 1)
+        self.assertEqual(second, 3)
+
+    def test_findTowerPair_none(self):
+        first, second, stackList, removedFromLeft = rain.findAndRemoveTowerPair([1, 2, 3, 2, 1])
+        self.assertIsNone(first)
+        self.assertIsNone(second)
+
+    def test_findTowerPair_repeated(self):
+        first, second, stackList, removedFromLeft = rain.findAndRemoveTowerPair([1, 1, 2, 2, 5, 5, 5, 3, 5, 5, 1])
+        self.assertEqual(first, 6)
+        self.assertEqual(second, 8)
+
+    def test_findTowerPair_fromRight(self):
+        first, second, stackList, removedFromLeft = rain.findAndRemoveTowerPair([5, 3, 1, 2])
+        self.assertEqual(first, 1)
+        self.assertEqual(second, 3)
+
+    def test_findTowerPair_SecondInMultiple(self):
+        first, second, stackList, removedFromLeft = rain.findAndRemoveTowerPair([5, 1, 2, 3])
+        self.assertEqual(first, 0)
+        self.assertEqual(second, 3)
+
+class AllPairsTests(unittest.TestCase):
+    def test_findPairsDegenerate(self):
+        pairs = rain.findAllPairs([1,2,3,2,1])
+        self.assertEqual([], pairs)
+
+    def test_findPairsSingle(self):
+        pairs = rain.findAllPairs([5,3,1,2])
+        self.assertEqual([(1,3)], pairs)
+
+    def test_findPairsMultiple(self):
+        pairs = rain.findAllPairs([1,4,2,5,1,2,3])
+        self.assertEqual([(1,3), (3,6)], pairs)
+
+    def test_findTowerPair_ThreePairs(self):
+        pairs = rain.findAllPairs([8,1,8,7,3,7,2,4])
+        self.assertEqual(pairs, [(0,2), (5,7), (3,5)])
+
 class RainTest(unittest.TestCase):
     def test_canPrintStack(self):
         printedStack = rain.printStack([1,4,2,5,1,2,3])
@@ -55,81 +160,15 @@ class RainTest(unittest.TestCase):
         printedStack = rain.printStack([1, 4, 2, 5, 1, 2, 3])
         self.assertEqual(printedStack, "...X...\n.X.X...\n.X.X..X\n.XXX.XX\nXXXXXXX\n1425123\n")
 
-
-    def test_findStartAndEndIndex(self):
-        start, end = rain.findStartAndEndIndex([4, 1, 3])
-        self.assertEqual(start, 0)
-        self.assertEqual(end, 2)
-
-        start, end = rain.findStartAndEndIndex([1, 4, 2, 5, 1, 2, 3])
-        self.assertEqual(start, 1)
-        self.assertEqual(end, 6)
-
-        start, end = rain.findStartAndEndIndex([1, 2, 3, 2, 1])
-        self.assertEqual(start, 2)
-        self.assertEqual(end, 2)
-
     def test_pairs_one(self):
         pairs = rain.findAllPairs([3, 1, 2, 5, 1, 2, 4, 3])
         self.assertEqual([(0, 3), (3, 6)], pairs)
 
 
-    def test_findNextTower(self):
-        firstTower = rain.findNextHighestIndex([1, 4, 2, 5], 1)
-        self.assertEqual(firstTower, 1)
-
-    def test_findTowerPair_easy(self):
-        first, second, finished = rain.findTowerPair([1,4,2,5])
-        self.assertEqual(first, 1)
-        self.assertEqual(second, 3)
-
-    def test_findTowerPair_none(self):
-        first, second, finished = rain.findTowerPair([1,2,3,2,1])
-        self.assertEqual(first, 2)
-        self.assertEqual(second, 2)
-        self.assertTrue(finished)
-
-    def test_findTowerPair_repeated(self):
-        first, second, finished = rain.findTowerPair([1,1,2,2,5,5,5,3,5,5,1])
-        self.assertEqual(first, 6)
-        self.assertEqual(second, 9)
-        self.assertTrue(finished)
-
-    def test_findTowerPair_hard(self):
-        first, second, finished = rain.findTowerPair([5,3,1,2])
-        self.assertEqual(first, 1)
-        self.assertEqual(second, 3)
-        self.assertTrue(finished)
-
-    def test_findTowerPair_SecondInMultiple(self):
-        first, second, finished = rain.findTowerPair([5,1,2,3])
-        self.assertEqual(first, 0)
-        self.assertEqual(second, 3)
-
-    def test_findPairsDegenerate(self):
-        pairs = rain.findAllPairs([1,2,3,2,1])
-        self.assertEqual([(2,2)], pairs)
-
-    def test_findPairsSingle(self):
-        """this is failing now because the "first index is the first non-decreasing" logic
-           (found in test_one) doesn't work for this example.
-           5 is a candidate, for sure, but once you find the right tower, you have to
-           go back and make sure you get the smallest maximum greater than the minimum tower.
-
-           Or is it a special case?
-           if you have 1, 3, 2... you go up from left until you hit a decreasing value.
-               -- This is just to throw out the edge that water would fall off from
-           but if you have 5, 3, 1, 2, you can't just assume non-decreasing is your left tower
-           It's a possible tower (as in 3, 1, 3)
-           but then you have to find the right tower first (first value >= candidate tower,
-           or right edge), then work back to find the smallest-max-greater-than-minumum
-           """
-        pairs = rain.findAllPairs([5,3,1,2])
-        self.assertEqual([(1,3)], pairs)
-
-    def test_findPairsMultiple(self):
-        pairs = rain.findAllPairs([1,4,2,5,1,2,3])
-        self.assertEqual([(1,3), (3,6)], pairs)
+class WaterCalcInPairTests(unittest.TestCase):
+    def test_waterInPair_one(self):
+        water = rain.calculateWaterInPair([3,1,2], (0,2))
+        self.assertEqual(water, 1)
 
     def test_waterCalc_one(self):
         water = rain.calculateWaterInStack([1,4,2,5,1,2,3])
@@ -139,7 +178,6 @@ class RainTest(unittest.TestCase):
         water = rain.calculateWaterInStack([1,2,3,2,1])
         self.assertEqual(water, 0)
 
-@unittest.skip("Skipping answers for now")
 class RainAnswerTests(unittest.TestCase):
     def test_equalTowers(self):
         answer = rain.answer([3,1,3])
@@ -212,3 +250,15 @@ class RainAnswerTests(unittest.TestCase):
     def test_increasingValley(self):
         answer = rain.answer([2,1,3,5])
         self.assertEqual(answer, 1)
+
+    def test_manyRepeats(self):
+        answer = rain.answer([2,2,2,2,2,2,2,2,1,7,8,9,6,5,5,5,5,5,3,2,1])
+        self.assertEqual(answer, 1)
+
+    def test_anotherTestCase(self):
+        answer = rain.answer([3, 2, 1, 1, 1, 2, 3])
+        self.assertEqual(answer, 1+2+2+2+1)
+
+    def test_repeatedTowers(self):
+        answer = rain.answer([1,3,4,5,1,5,5,5,3,2,2,1,2])
+        self.assertEqual(answer, 5)
