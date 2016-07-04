@@ -15,12 +15,7 @@ def printStack(stackList):
     return printedStack
 
 def answer(stackList):
-    # self.stackList = stackList
-    useFirstAttempt = False
-    if useFirstAttempt:
-        return firstAttempt(stackList)
-    else:
-        return calculateWaterInStack(stackList)
+    return calculateWaterInStack(stackList)
 
 def calculateWaterInStack(stacklist):
     pairs = findAllPairs(stacklist)
@@ -89,44 +84,16 @@ def findPreviousHighestIndex(stackList, highestPoint, pairedTowerHeight=-1):
                 return x
     return None
 
-def firstAttempt(stackList):
-    start, end = findStartAndEndIndex(stackList)
-    standingWater = 0
-    lastHighest = 0
-    lastHighestIndex = 0
-    for x in xrange(start, end):
-        if stackList[x] >= lastHighest:
-            lastHighest = stackList[x]
-            lastHighestIndex = x
-        elif stackList[x] < lastHighest:
-            #now find the next highest tower
-            nextHighest = max(stackList[x:end+1])
-            if (stackList[x] == nextHighest):
-                lastHighest = stackList[x]
-                lastHighestIndex = x
-                continue
-            standingWater += lastHighest - stackList[x]
-    if lastHighest > stackList[end]:
-        standingDifference = (lastHighest - stackList[end]) * (x - lastHighestIndex)
-        standingWater -= standingDifference
-    return standingWater
+def findLeftStartIndex(stackList):
+    # Find the first index of the list where the next element is decreasing
+    for x in xrange(len(stackList) - 1):
+        if stackList[x] > stackList[x+1]:
+            return x
+    return len(stackList) - 1
 
-def findStartAndEndIndex(stacklist):
-    startHeight = 0
-    endHeight = 0
-    for x in xrange(len(stacklist) - 1):
-        if stacklist[x] > stacklist[x+1]:
-            startHeight = x
-            break
-
-    # could early out here if startheight = 0?
-
-    for x in xrange(len(stacklist) - 1, 0, -1):
-        if stacklist[x] > stacklist[x-1]:
-            endHeight = x
-            break
-
-    return startHeight, endHeight
-
-def findTowers(stacklist):
-    start, end = findStartAndEndIndex(stacklist)
+def findRightStartIndex(stackList):
+    # Find the first index on the list starting from the right where the next element is non-increasing
+    for x in xrange(len(stackList) - 1, -1, -1):
+        if stackList[x-1] < stackList[x]:
+            return x
+    return 0

@@ -7,6 +7,42 @@ class SetupTests(unittest.TestCase):
         start = rain.findLeftStartIndex([1,4,2,5])
         self.assertEqual(start, 1)
 
+    def test_findLeftStart_Mountain(self):
+        start = rain.findLeftStartIndex([1,2,3,4,5])
+        self.assertEqual(start, 4)
+
+    def test_findLeftStart_Descending(self):
+        start = rain.findLeftStartIndex([5,4,3,2,1])
+        self.assertEqual(start, 0)
+
+    def test_findLeftStart_Repeating(self):
+        start = rain.findLeftStartIndex([2,2,3,2])
+        self.assertEqual(start, 2)
+
+    def test_findLeftStart_AllRepeating(self):
+        start = rain.findLeftStartIndex([1,1,1,1,1])
+        self.assertEqual(start, 4)
+
+    def test_findRightStart(self):
+        end = rain.findRightStartIndex([1,4,2,5])
+        self.assertEqual(end, 3)
+
+    def test_findRightStart_Mountain(self):
+        end = rain.findRightStartIndex([1,2,3,4,5])
+        self.assertEqual(end, 4)
+
+    def test_findRightStart_Descending(self):
+        end = rain.findRightStartIndex([5,4,3,2,1])
+        self.assertEqual(end, 0)
+
+    def test_findRightStart_Repeating(self):
+        end = rain.findRightStartIndex([2,3,2,2])
+        self.assertEqual(end, 1)
+
+    def test_findRightStart_AllRepeating(self):
+        end = rain.findRightStartIndex([1,1,1,1,1])
+        self.assertEqual(end, 0)
+
 @unittest.skip("skip general tests")
 class RainTest(unittest.TestCase):
     def test_canPrintStack(self):
