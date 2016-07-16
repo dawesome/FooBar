@@ -3,16 +3,21 @@ def answer(words):
 
     root = None
     factList = []
+    allLetters = []
 
     currentAlphabetizedList, words = sliceFirstLetters(words)
     factList.append(currentAlphabetizedList)
+    allLetters = set(currentAlphabetizedList)
 
     while currentAlphabetizedList:
 #        root = insertLetters(currentAlphabetizedList, root)
         currentAlphabetizedList, words = sliceFirstLetters(words)
         factList.append(currentAlphabetizedList)
+        allLetters = allLetters.union(set(currentAlphabetizedList))
 
-    allLetters = None; # make a list of all letters we've seen? Could do this along the way?
+
+    for letter in allLetters:
+        pass # here, need to insert all letters using fact-list comparitors
 
     inOrderList = []
     makeInOrderList(root, inOrderList)
