@@ -1,0 +1,7 @@
+Binary search tree insert works because you can do direct comparisons of nodes.
+1 < 3 < 4, etc
+
+So we could do Binary search tree insert if we had a list of facts.
+For each word, create a letter-slice word consisting of the first letter of each word, and another that's every letter
+of the second word, etc.
+These are our list of "facts", i.e. these words will contain every greater-than/less-than relationship that we should need.
