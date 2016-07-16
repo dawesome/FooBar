@@ -31,6 +31,24 @@ class answerTests(unittest.TestCase):
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'acde')
 
+    def test_repeatFirstLetters(self):
+        words = ['ca', 'cc', 'da']
+        alphabet = minglish.answer(words)
+        self.assertEqual(alphabet, 'acd')
+
+    # eq_(minglishlesson.answer(['c', 'cac', 'cb', 'bcc', 'ba']), 'cab')
+    # eq_(minglishlesson.answer(['y', 'z', 'xy']), 'yzx')
+    # eq_(minglishlesson.answer(['ba', 'ab', 'cb']), 'bac')
+
+class factTests(unittest.TestCase):
+    def test_factsCreatsTrivialFact(self):
+        facts = minglish.makeFacts(['a', 'b'])
+        self.assertEqual(facts, ['ab'])
+
+    def test_factsRepeatedFirstLetters(self):
+        facts = minglish.makeFacts(['ac', 'aa'])
+        self.assertEqual(facts, ['ca'])
+
 class treeTests(unittest.TestCase):
     def setUp(self):
         self.root = minglish.Node('m')
@@ -100,3 +118,30 @@ class binarySearchTreeTests(unittest.TestCase):
         inOrderList = []
         minglish.makeInOrderList(root, inOrderList)
         self.assertEqual(''.join(inOrderList), '12346789')
+
+    def test_insertLetters(self):
+        root = minglish.insert(None, 'd')
+        root = minglish.insert(root, 'a')
+        root = minglish.insert(root, 'e')
+        root = minglish.insert(root, 'b')
+        root = minglish.insert(root, 'o')
+        root = minglish.insert(root, 'p')
+        root = minglish.insert(root, 'z')
+        root = minglish.insert(root, 'q')
+        inOrderList = []
+        minglish.makeInOrderList(root, inOrderList)
+        self.assertEqual(''.join(inOrderList), 'abdeopqz')
+
+    def test_insertWithCompare(self):
+        alphabet = ['abcdefghijklmnopqrstuvwxyz']
+        root = minglish.insert(None, 'd', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'a', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'e', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'b', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'o', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'p', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'z', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        root = minglish.insert(root, 'q', comparitor=minglish.compareLetters, comparitorFacts=alphabet)
+        inOrderList = []
+        minglish.makeInOrderList(root, inOrderList)
+        self.assertEqual(''.join(inOrderList), 'abdeopqz')

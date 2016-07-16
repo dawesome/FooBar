@@ -1,28 +1,54 @@
+from collections import OrderedDict
+
 def answer(words):
     # return firstAttempt(words)
 
     root = None
-    factList = []
-    allLetters = []
+    factList = makeFacts(words)
+    allLetters = set(''.join(x for x in factList))
 
-    currentAlphabetizedList, words = sliceFirstLetters(words)
-    factList.append(currentAlphabetizedList)
-    allLetters = set(currentAlphabetizedList)
-
-    while currentAlphabetizedList:
-#        root = insertLetters(currentAlphabetizedList, root)
-        currentAlphabetizedList, words = sliceFirstLetters(words)
-        factList.append(currentAlphabetizedList)
-        allLetters = allLetters.union(set(currentAlphabetizedList))
+#     while currentAlphabetizedList:
+# #        root = insertLetters(currentAlphabetizedList, root)
+#         currentAlphabetizedList, words = sliceFirstLetters(words)
+#         factList.append(currentAlphabetizedList)
+#         allLetters = allLetters.union(set(currentAlphabetizedList))
 
 
     for letter in allLetters:
-        pass # here, need to insert all letters using fact-list comparitors
+        root = insert(root, letter, comparitor=compareLetters, comparitorFacts=factList)
 
     inOrderList = []
     makeInOrderList(root, inOrderList)
     return ''.join(inOrderList)
 
+def makeFacts(words):
+    facts = []
+
+    firstLetters = [x[0] for x in words]
+    # Find any repeats
+    repeatedLetter = ''
+    wordsToMakeMoreFactsFrom = []
+    for i in xrange(len(firstLetters)):
+        if not repeatedLetter or firstLetters[i] != repeatedLetter:
+            repeatedLetter = firstLetters[i]
+            if len(wordsToMakeMoreFactsFrom) > 1:
+                newFacts = makeFacts(wordsToMakeMoreFactsFrom)
+                if newFacts:
+                    facts.append(newFacts[0])
+            wordsToMakeMoreFactsFrom = [words[i][1:]]
+            continue
+        else:
+            wordsToMakeMoreFactsFrom.append(words[i][1:])
+
+    if len(wordsToMakeMoreFactsFrom) > 1:
+        newFacts = makeFacts(wordsToMakeMoreFactsFrom)
+        if newFacts:
+            facts.append(newFacts[0])
+
+    possibleFacts = list(OrderedDict.fromkeys(firstLetters))
+    if len(possibleFacts) > 1:
+        facts.append(''.join(possibleFacts))
+    return facts
 
 def insertLetters(currentAlphabetizedList, root):
     if currentAlphabetizedList:
@@ -93,19 +119,20 @@ def insertNode(root, valueToInsert, afterValue, before=True):
         except AttributeError as e:
             raise StandardError("hit AttributeError with afterValue = " + afterValue)
 
-def insert(root, value):
+def insert(root, value, comparitor=None, comparitorFacts=None):
     if root is None:
         root = Node(value)
-    elif root.value > value:
+
+    elif root.value > value if comparitor is None else comparitor(root.value, value, comparitorFacts):
         if root.left is None:
             root.left = Node(value)
         else:
-            insert(root.left, value)
+            insert(root.left, value, comparitor, comparitorFacts)
     else:
         if root.right is None:
             root.right = Node(value)
         else:
-            insert(root.right, value)
+            insert(root.right, value, comparitor, comparitorFacts)
     return root
 
 def makeInOrderList(root, list):
@@ -117,3 +144,10 @@ def makeInOrderList(root, list):
     list.append(root.value)
     if root.right:
         makeInOrderList(root.right, list)
+
+def compareLetters(first, second, facts):
+    def internalCompare(first, second):
+        fact = [x for x in facts if first in x and second in x]
+        return fact[0].index(first) > fact[0].index(second)
+
+    return internalCompare(first, second)
