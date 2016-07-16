@@ -1,5 +1,6 @@
 import unittest
 import beta
+import random
 
 class AnswerTests(unittest.TestCase):
     def test_canCallAnswer(self):
@@ -37,25 +38,10 @@ class AnswerTests(unittest.TestCase):
         leftover = beta.answer(food, grid)
         self.assertEqual(1, leftover)
 
-class NeighborTests(unittest.TestCase):
-    def test_getNeighborsZero(self):
-        node = beta.LessThanNode(0, [0,0])
-        neighbors = beta.getNeighbors(node, gridSize=4)
-        self.assertEqual(len(neighbors), 2)
-        self.assertEqual(neighbors[0], [1,0])
-        self.assertEqual(neighbors[1], [0,1])
-
-    def test_neighborWallRight(self):
-        node = beta.LessThanNode(0, [3, 0])
-        neighbors = beta.getNeighbors(node, gridSize=4)
-        self.assertEqual(len(neighbors), 1)
-        self.assertEqual(neighbors[0], [3, 1])
-
-    def test_neighborWallDown(self):
-        node = beta.LessThanNode(0, [0, 3])
-        neighbors = beta.getNeighbors(node, gridSize=4)
-        self.assertEqual(len(neighbors), 1)
-        self.assertEqual(neighbors[0], [1, 3])
+    def test_stressTest(self):
+        food = 200
+        grid = [[random.randrange(1,3) for _ in range(20)] for _ in range(20)]
+        leftover = beta.answer(food, grid)
 
 class RemainderTests(unittest.TestCase):
     def test_simpleRemainder(self):
