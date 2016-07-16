@@ -13,13 +13,16 @@ def answer(words):
 #         factList.append(currentAlphabetizedList)
 #         allLetters = allLetters.union(set(currentAlphabetizedList))
 
+    # This is the BST attempt
+    # for letter in allLetters:
+    #     root = insert(root, letter, comparitor=compareLetters, comparitorFacts=factList)
 
-    for letter in allLetters:
-        root = insert(root, letter, comparitor=compareLetters, comparitorFacts=factList)
+    # inOrderList = []
+    # makeInOrderList(root, inOrderList)
+    # return ''.join(inOrderList)
 
-    inOrderList = []
-    makeInOrderList(root, inOrderList)
-    return ''.join(inOrderList)
+    alphabet = joinFacts(factList)
+    return alphabet
 
 def makeFacts(words):
     facts = []
@@ -49,6 +52,24 @@ def makeFacts(words):
     if len(possibleFacts) > 1:
         facts.append(''.join(possibleFacts))
     return facts
+
+def joinFacts(facts):
+    while len(facts) > 1:
+        firstFact = facts[0]
+        for x in xrange(1, len(facts)):
+            if firstFact[0] == facts[x][len(facts[x]) - 1]:
+                newFact = facts[x] + firstFact[1:]
+                facts.remove(facts[x])
+                facts.remove(firstFact)
+                facts.append(newFact)
+                break
+            elif firstFact[len(firstFact) - 1] == facts[x][0]:
+                newFact = firstFact + facts[x][1:]
+                facts.remove(facts[x])
+                facts.remove(firstFact)
+                facts.append(newFact)
+                break
+    return ''.join(facts)
 
 def insertLetters(currentAlphabetizedList, root):
     if currentAlphabetizedList:

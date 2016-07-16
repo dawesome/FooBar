@@ -25,20 +25,13 @@ class answerTests(unittest.TestCase):
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'ebr')
 
-    @unittest.skip
-    def test_haveToUseBefore(self):
-        words = ['aa', 'aa', 'acce', 'adec']
-        alphabet = minglish.answer(words)
-        self.assertEqual(alphabet, 'acde')
-
     def test_repeatFirstLetters(self):
         words = ['ca', 'cc', 'da']
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'acd')
 
+    # ca, cc, da, dc  -> facts = 'cd', 'ac' => acd
     # eq_(minglishlesson.answer(['c', 'cac', 'cb', 'bcc', 'ba']), 'cab')
-    # eq_(minglishlesson.answer(['y', 'z', 'xy']), 'yzx')
-    # eq_(minglishlesson.answer(['ba', 'ab', 'cb']), 'bac')
 
 class factTests(unittest.TestCase):
     def test_factsCreatsTrivialFact(self):
@@ -48,6 +41,10 @@ class factTests(unittest.TestCase):
     def test_factsRepeatedFirstLetters(self):
         facts = minglish.makeFacts(['ac', 'aa'])
         self.assertEqual(facts, ['ca'])
+
+    def test_joinFacts(self):
+        alphabet = minglish.joinFacts(['cd', 'ac'])
+        self.assertEqual(alphabet, 'acd')
 
 class treeTests(unittest.TestCase):
     def setUp(self):
