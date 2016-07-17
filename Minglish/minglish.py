@@ -1,8 +1,11 @@
 from collections import OrderedDict
+import timeit
 
 def answer(words):
     factList = makeFacts(words)
-    return joinFacts(factList)
+    # joinFacts(factList)
+    graph = makeGraph(facts)
+    return
 
 def makeFacts(words):
     facts = []
@@ -50,3 +53,36 @@ def joinFacts(facts):
                 facts.append(newFact)
                 break
     return ''.join(facts)
+
+def makeGraph(facts):
+    graph = Graph()
+    for fact in facts:
+        for x in fact:
+            if x not in graph.keys():
+                graph.addNode(x)
+
+
+class Graph():
+    def __init__(self):
+        self.nodes = {}
+
+    def addNode(self, letter):
+        self.nodes[letter] = Node(letter)
+
+    def keys(self):
+        return self.nodes.keys()
+
+class Node():
+    def __init__(self, letter):
+        self.letter = letter
+        self.edges  = []
+
+    def addEdge(self, letter):
+        edges.append(letter)
+
+# words = []
+# for x in xrange(50):
+#     words.append('a' + chr(ord('a') + x) * 49)
+# print timeit.timeit(lambda: makeFacts(words), number=1)
+# facts = makeFacts(words)
+# print timeit.timeit(lambda: joinFacts(facts), number=1)

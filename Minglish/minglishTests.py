@@ -1,5 +1,6 @@
 import unittest
 import minglish
+import timeit
 
 class answerTests(unittest.TestCase):
     def test_canCallAnswer(self):
@@ -45,3 +46,17 @@ class factTests(unittest.TestCase):
     def test_joinFacts(self):
         alphabet = minglish.joinFacts(['cd', 'ac'])
         self.assertEqual(alphabet, 'acd')
+
+class stressTess(unittest.TestCase):
+    def test_makeFacts(self):
+        words = []
+        for x in xrange(50):
+            words.append('a' + chr(ord('a') + x) * 49)
+        print timeit.timeit(lambda:minglish.makeFacts(words), number=1)
+
+    def test_joinFacts(self):
+        words = []
+        for x in xrange(50):
+            words.append('a' + chr(ord('a') + x) * 49)
+        facts = minglish.makeFacts(words)
+        print timeit.timeit(lambda:minglish.joinFacts(facts), number=1)
