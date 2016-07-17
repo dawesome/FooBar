@@ -27,7 +27,7 @@ class answerTests(unittest.TestCase):
         self.assertEqual(alphabet, 'ebr')
 
     def test_repeatFirstLetters(self):
-        words = ['ca', 'cc', 'da']
+        words = ['ca', 'cc', 'da', 'dc']
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'acd')
 
@@ -36,10 +36,11 @@ class answerTests(unittest.TestCase):
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'cab')
 
-    # ca, cc, da, dc  -> facts = 'cd', 'ac' => acd
-    # eq_(minglishlesson.answer(['c', 'cac', 'cb', 'bcc', 'ba']), 'cab')
+    def test_factAfterReapeats(self):
+        words = ['a', 'bb', 'bbr', 'bbs', 'bq', 'bre', 'cr', 'ee', 'r']
+        alphabet = minglish.answer(words)
+        self.assertEqual(alphabet, 'abceqrs')
 
-class factTests(unittest.TestCase):
     def test_factsCreatsTrivialFact(self):
         facts = minglish.makeFacts(['a', 'b'])
         self.assertEqual(facts, ['ab'])

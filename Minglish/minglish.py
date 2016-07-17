@@ -3,9 +3,28 @@ import timeit
 from itertools import islice, izip
 
 def answer(words):
-    facts = makeFacts(words)
-    graph = makeGraph(facts)
+    # facts = makeFacts(words)
+    # graph = makeGraph(facts)
+
+    graph = makeGraphFromWords(words)
     return topologicalSort(graph)
+
+def makeGraphFromWords(words):
+    graph = Graph()
+    for x in xrange (len(words) - 1):
+        firstWord = words[x]
+        secondWord = words[x+1]
+        maxLength = max(len(firstWord), len(secondWord))
+        for letterPair in zip(firstWord[:maxLength], secondWord[:maxLength]):
+            graph.addNode(letterPair[0])
+            graph.addNode(letterPair[1])
+            if letterPair[0] == letterPair[1]:
+                continue
+            else:
+                graph.nodes[letterPair[0]].addEdge(letterPair[1])
+                break
+    return graph
+
 
 def makeFacts(words):
     facts = []
@@ -94,7 +113,8 @@ class Graph():
         self.nodes = {}
 
     def addNode(self, letter):
-        self.nodes[letter] = Node(letter)
+        if letter not in self.keys():
+            self.nodes[letter] = Node(letter)
 
     def keys(self):
         return self.nodes.keys()
