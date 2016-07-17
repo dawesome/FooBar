@@ -1,11 +1,11 @@
-from collections import OrderedDict
+from collections import OrderedDict, deque
 import timeit
+from itertools import islice, izip
 
 def answer(words):
-    factList = makeFacts(words)
-    # joinFacts(factList)
+    facts = makeFacts(words)
     graph = makeGraph(facts)
-    return
+    return topologicalSort(graph)
 
 def makeFacts(words):
     facts = []
@@ -21,10 +21,12 @@ def makeFacts(words):
                 newFacts = makeFacts(wordsToMakeMoreFactsFrom)
                 if newFacts:
                     facts.append(newFacts[0])
-            wordsToMakeMoreFactsFrom = [words[i][1:]]
+            if len(words[i]) > 1:
+                wordsToMakeMoreFactsFrom = [words[i][1:]]
             continue
         else:
-            wordsToMakeMoreFactsFrom.append(words[i][1:])
+            if len(words[i]) > 1:
+                wordsToMakeMoreFactsFrom.append(words[i][1:])
 
     if len(wordsToMakeMoreFactsFrom) > 1:
         newFacts = makeFacts(wordsToMakeMoreFactsFrom)
@@ -57,10 +59,35 @@ def joinFacts(facts):
 def makeGraph(facts):
     graph = Graph()
     for fact in facts:
-        for x in fact:
-            if x not in graph.keys():
-                graph.addNode(x)
+        for x in izip(fact, fact[1:]):
+            if x[0] not in graph.keys():
+                graph.addNode(x[0])
+            if x[1] not in graph.keys():
+                graph.addNode(x[1])
+            graph.nodes[x[0]].addEdge(x[1])
+    return graph
 
+def topologicalSort(graph):
+    sortedNodes  = deque()
+    visitedNodes = []
+    markedNodes  = []
+
+    def visit(node):
+        if node in markedNodes:
+            raise Exception("Not a directed acyclic graph")
+        elif node not in visitedNodes:
+            markedNodes.append(node)
+            for edge in node.edges:
+                visit(graph.nodes[edge])
+            visitedNodes.append(node)
+            markedNodes.remove(node)
+            sortedNodes.appendleft(node.letter)
+
+    for node in graph.values():
+        if node not in visitedNodes:
+            visit(node)
+
+    return ''.join(sortedNodes)
 
 class Graph():
     def __init__(self):
@@ -72,13 +99,17 @@ class Graph():
     def keys(self):
         return self.nodes.keys()
 
+    def values(self):
+        return self.nodes.values()
+
 class Node():
     def __init__(self, letter):
         self.letter = letter
         self.edges  = []
 
     def addEdge(self, letter):
-        edges.append(letter)
+        if letter not in self.edges:
+            self.edges.append(letter)
 
 # words = []
 # for x in xrange(50):
