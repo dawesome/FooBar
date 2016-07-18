@@ -1,10 +1,7 @@
-from collections import OrderedDict, deque
-import timeit
-from itertools import islice, izip
+from collections import deque
+from itertools import izip
 
 def answer(words):
-    # facts = makeFacts(words)
-    # graph = makeGraph(facts)
 
     graph = makeGraphFromWords(words)
     return topologicalSort(graph)
@@ -24,56 +21,6 @@ def makeGraphFromWords(words):
                 graph.nodes[letterPair[0]].addEdge(letterPair[1])
                 break
     return graph
-
-
-def makeFacts(words):
-    facts = []
-
-    firstLetters = [x[0] for x in words]
-    # Find any repeats
-    repeatedLetter = ''
-    wordsToMakeMoreFactsFrom = []
-    for i in xrange(len(firstLetters)):
-        if not repeatedLetter or firstLetters[i] != repeatedLetter:
-            repeatedLetter = firstLetters[i]
-            if len(wordsToMakeMoreFactsFrom) > 1:
-                newFacts = makeFacts(wordsToMakeMoreFactsFrom)
-                if newFacts:
-                    facts.append(newFacts[0])
-            if len(words[i]) > 1:
-                wordsToMakeMoreFactsFrom = [words[i][1:]]
-            continue
-        else:
-            if len(words[i]) > 1:
-                wordsToMakeMoreFactsFrom.append(words[i][1:])
-
-    if len(wordsToMakeMoreFactsFrom) > 1:
-        newFacts = makeFacts(wordsToMakeMoreFactsFrom)
-        if newFacts:
-            facts.append(newFacts[0])
-
-    possibleFacts = list(OrderedDict.fromkeys(firstLetters))
-    if len(possibleFacts) > 1:
-        facts.append(''.join(possibleFacts))
-    return facts
-
-def joinFacts(facts):
-    while len(facts) > 1:
-        firstFact = facts[0]
-        for x in xrange(1, len(facts)):
-            if firstFact[0] == facts[x][len(facts[x]) - 1]:
-                newFact = facts[x] + firstFact[1:]
-                facts.remove(facts[x])
-                facts.remove(firstFact)
-                facts.append(newFact)
-                break
-            elif firstFact[len(firstFact) - 1] == facts[x][0]:
-                newFact = firstFact + facts[x][1:]
-                facts.remove(facts[x])
-                facts.remove(firstFact)
-                facts.append(newFact)
-                break
-    return ''.join(facts)
 
 def makeGraph(facts):
     graph = Graph()
@@ -130,10 +77,3 @@ class Node():
     def addEdge(self, letter):
         if letter not in self.edges:
             self.edges.append(letter)
-
-# words = []
-# for x in xrange(50):
-#     words.append('a' + chr(ord('a') + x) * 49)
-# print timeit.timeit(lambda: makeFacts(words), number=1)
-# facts = makeFacts(words)
-# print timeit.timeit(lambda: joinFacts(facts), number=1)

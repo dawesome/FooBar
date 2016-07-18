@@ -41,31 +41,6 @@ class answerTests(unittest.TestCase):
         alphabet = minglish.answer(words)
         self.assertEqual(alphabet, 'abceqrs')
 
-    def test_factsCreatsTrivialFact(self):
-        facts = minglish.makeFacts(['a', 'b'])
-        self.assertEqual(facts, ['ab'])
-
-    def test_factsRepeatedFirstLetters(self):
-        facts = minglish.makeFacts(['ac', 'aa'])
-        self.assertEqual(facts, ['ca'])
-
-    def test_joinFacts(self):
-        alphabet = minglish.joinFacts(['cd', 'ac'])
-        self.assertEqual(alphabet, 'acd')
-
-class stressTess(unittest.TestCase):
-    def test_makeFacts(self):
-        words = []
-        for x in xrange(50):
-            words.append('a' + chr(ord('a') + x) * 49)
-        print timeit.timeit(lambda:minglish.makeFacts(words), number=1)
-
-    def test_joinFacts(self):
-        words = []
-        for x in xrange(50):
-            words.append('a' + chr(ord('a') + x) * 49)
-        facts = minglish.makeFacts(words)
-        print timeit.timeit(lambda:minglish.joinFacts(facts), number=1)
 
 class graphTests(unittest.TestCase):
     def test_makeGraph(self):
